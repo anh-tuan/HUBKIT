@@ -1,0 +1,36 @@
+{
+  "name": "HUBKit",
+  "version": "0.2.2",
+  "summary": "SDK for interacting witht the Movideo HUB API",
+  "description": "An SDK that encapsulates the data layer and webservices used to interact with the HUB API",
+  "homepage": "http://www.danet.vn/",
+  "authors": {
+    "Robert Wagstaff": "robwagstaff1984@gmail.com",
+    "Chao Ruan": "chao@authenticentertainment.com.au"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "license": "Copyright 2015 Movideo",
+  "source": {
+    "git": "https://github.com/anh-tuan/HUBKit.git"
+  },
+  "source_files": [
+    "HUBKit",
+    "HUBKit/**/*.{h,m}"
+  ],
+  "public_header_files": "HUBKit/**/*.h",
+  "frameworks": "SystemConfiguration",
+  "requires_arc": true,
+  "dependencies": {
+    "AFNetworking": [
+      "~> 2.6.0"
+    ],
+    "Mantle": [
+      "~> 2.0.4"
+    ],
+    "ReactiveCocoa": [
+      "~> 2.4.7"
+    ]
+  }
+}
