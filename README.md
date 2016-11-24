@@ -8,7 +8,7 @@ This library is a work in progress, and breaking changes may be introduced at an
 Using [Cocoapods](http://cocoapods.org/) to install HUBKit is easy. Just add this line to your `Podfile`
 
 ```
-pod 'HUBKit', :git => 'git@github.com:Movideo/HUBKit.git'
+pod 'HUBKit', :git => 'git@github.com:anh-tuan/HUBKit.git'
 ```
 Then run `pod install`
 
@@ -51,7 +51,7 @@ Don't open the .xcodeproj just yet, we'll be installing the pod dependencies fir
 
 ```
 $ git clone git@github.com:AuthenticEntertainment/HUB-iOS-SDK.git HUBKit
-$ pod install 
+$ pod install
 # use --verbose if you want to see exactly what's going on
 $ open HUBKit.xcworkspace
 ```
@@ -65,11 +65,11 @@ There is a folder named `SampleApp` inside the HUBKit library. This is a simple 
 
 **Usage**
 
-* Make sure you under the `SampleApplication` folder and run `pod install`. 
+* Make sure you under the `SampleApplication` folder and run `pod install`.
 * Open `SampleApplication.xcworkspace`
 * Build and Run in simulator or device.
 
-**Note:** `SampleApp` is using local HUBKit directory as the pod source. Please check `SampleApp/Podfile` to find more detail 
+**Note:** `SampleApp` is using local HUBKit directory as the pod source. Please check `SampleApp/Podfile` to find more detail
 
 ##Example code usage
 #####Create an API Client instance:
@@ -107,4 +107,3 @@ git checkout -b short-feature-name
 
 
 Copyright 2015 Movideo
-
