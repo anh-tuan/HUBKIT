@@ -38,6 +38,8 @@
         return[MTLJSONAdapter modelOfClass:HKTRail.class fromJSONDictionary:value error:NULL];
     }] array];
     
+    //NSLog(@"railsListResponse: %@",railsListResponse);
+    
     return railsListResponse;
 }
 

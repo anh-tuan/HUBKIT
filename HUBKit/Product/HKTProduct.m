@@ -39,6 +39,8 @@
               @"defaultImages"       :   @"image.profile.default", // TODO check definitions of images. Seems wrong
               @"posterImages"        :   @"image.profile.poster",
               @"backgroundImages"    :   @"image.profile.background",
+              @"posterImagesURL"        :   @"poster",
+              @"backgroundImagesURL"    :   @"background",
               @"createdAt"    :   @"created_at",
               @"modifiedAt"          :   @"modified_at",
               @"offerings"          :   @"offerings",

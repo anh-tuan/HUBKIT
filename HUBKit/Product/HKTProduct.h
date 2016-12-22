@@ -36,6 +36,10 @@
 @property (nonatomic, copy, readonly) NSArray<HKTImageMetaData*> *posterImages;
 @property (nonatomic, copy, readonly) NSArray<HKTImageMetaData*> *backgroundImages;
 
+@property (nonatomic, copy, readonly) NSURL *posterImagesURL;
+@property (nonatomic, copy, readonly) NSURL *backgroundImagesURL;
+
+
 @property (nonatomic, readonly) HKTImageMetaData* defaultImage;
 @property (nonatomic, readonly) HKTImageMetaData* posterImage;
 @property (nonatomic, readonly) HKTImageMetaData* backgroundImage;

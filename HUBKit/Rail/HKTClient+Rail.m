@@ -19,14 +19,15 @@
 
 - (RACSignal*) fetchAllRailsWithParameters:(NSArray<HKTRequestParameter*>*)parameters type:(HKTProductType)type
 {
-    NSString *path = [NSString stringWithFormat:@"content/rails/%@",[self pathForType:type]];
+    //NSString *path = [NSString stringWithFormat:@"content/rails/%@",[self pathForType:type]];
+    NSString *path = [NSString stringWithFormat:@"data/rails/%@",[self pathForType:type]];
     NSDictionary *param = [HKTRequestParameter dictionaryForRequestParameters:parameters];
     // Need update for iOS
     param = [param mtl_dictionaryByAddingEntriesFromDictionary:@{@"device":@"ios"}];
     NSURLRequest *request = [self createRequestForResource:path
                                                     method:URLRequestMethodTypeGET
                                                 parameters:param];
-    
+    NSLog(@"fetchAllRailsWithParameters.request: %@",request);
     return [[self enqueueRequest:request resultClass:HKTListResponse.class] hkt_parsedRailsList];
 }
 

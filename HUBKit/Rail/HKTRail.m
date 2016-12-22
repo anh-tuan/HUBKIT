@@ -13,10 +13,16 @@
 {
     return [super.JSONKeyPathsByPropertyKey mtl_dictionaryByAddingEntriesFromDictionary:
             @{
-              @"theme"  :   @"theme",
-              @"collectionID"               :   @"collection_id",
-              @"limit"  :   @"limit",
+              //@"theme"  :   @"theme",
+              //@"collectionID"               :   @"collection_id",
+              //@"limit"  :   @"limit",
+              //@"type"   :   @"type",
+              //@"items"  :   @"items"
+              
               @"type"   :   @"type",
+              @"playlistID"     :   @"id",
+              @"name"  :   @"name",
+              @"package_type"  :   @"package_type",
               @"items"  :   @"items"
               }];
 }

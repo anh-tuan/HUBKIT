@@ -34,8 +34,8 @@
  *
  *  @return A RACSignal that contains an NSArray<HKTCollection*>*
  */
-- (RACSignal*)fetchCollectionWithID:(NSString*)collectionID;
-
+//- (RACSignal*)fetchCollectionWithID:(NSString*)collectionID;
+- (RACSignal*)fetchPlaylistWithID:(NSString*)playlistID;
 /**
  *  Fetch all collections matching parameter criteria. The associated HKTProducts will not be fetched/
  *

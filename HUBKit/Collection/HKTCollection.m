@@ -15,12 +15,15 @@
 {
     return [super.JSONKeyPathsByPropertyKey mtl_dictionaryByAddingEntriesFromDictionary:
             @{
-              @"title"                  :   @"title",
-              @"collectionDescription"  :   @"description",
-              @"defaultImage"           :   @"images.profile.default",// TODO check definitions of images. Seems wrong
-              @"posterImage"            :   @"images.profile.poster",
-              @"backgroundImage"        :   @"images.profile.background",
-              @"products"               :   @"data"
+              //@"title"                  :   @"title",
+              //@"collectionDescription"  :   @"description",
+              //@"defaultImage"           :   @"images.profile.default",// TODO check definitions of images. Seems wrong
+              //@"posterImage"            :   @"images.profile.poster",
+              //@"backgroundImage"        :   @"images.profile.background",
+              //@"products"               :   @"data"
+              @"playlist_id"    :   @"id",
+              @"playlist_name"                  :   @"playlist_name",
+              @"products"               :   @"list"
               }];
 }
 

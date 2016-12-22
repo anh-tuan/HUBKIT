@@ -14,7 +14,9 @@
 //NSString* const HUBKitBaseURL = @"http://danet.ap-southeast-1.elasticbeanstalk.com/";
 //NSString* const HUBKitBaseURL = @"http://danetmiddleware.54aqfb5idd.ap-southeast-1.elasticbeanstalk.com/";
 //NSString* const HUBKitBaseURL = @"http://danetmiddleware-prod.ap-southeast-1.elasticbeanstalk.com/";
+//NSString* const HUBKitBaseURL = @"http://alpha.danet.vn/api/";
 NSString* const HUBKitBaseURL = @"http://api.danet.vn/";
+//http://api.danet.vn/playlist/list/1
 
 NSString * const HKTClientErrorDomain = @"HKTClientErrorDomain";
 NSString * const HKTClientErrorRequestURLKey = @"HKTClientErrorRequestURLKey";
@@ -166,18 +168,22 @@ const NSInteger HKTClientErrorRequestForbidden = 674;
 {
     RACSignal *signal = [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
         
+        NSLog(@"enqueueRequest request: %@",request);
+        
         NSURLSessionDataTask __block *dataTask = [self dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
             
             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response ?: (NSHTTPURLResponse *)dataTask.response;
-            
+            //NSLog(@"[%@ %d %s] enqueueRequest responseObject: %@", [[[NSString stringWithUTF8String:__FILE__] lastPathComponent] lastPathComponent], __LINE__, __PRETTY_FUNCTION__,responseObject);
             if (! error) {
                 [subscriber sendNext:RACTuplePack(httpResponse, responseObject)];
                 [subscriber sendCompleted];
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"resetMenu" object:nil];
             } else {
                 NSLog(@"%@ %@ %@ => FAILED WITH %li", request.HTTPMethod, request.URL, request.allHTTPHeaderFields, (long)httpResponse.statusCode);
-                [subscriber sendError:[self.class HUBKitErrorForURLResponse:dataTask.response error:dataTask.error]];
-                
+                //[subscriber sendError:[self.class HUBKitErrorForURLResponse:dataTask.response error:dataTask.error]];
+                [subscriber sendNext:RACTuplePack(httpResponse, responseObject)];
+                [subscriber sendCompleted];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"resetMenu" object:nil];
             }
         }];
         

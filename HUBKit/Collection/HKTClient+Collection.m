@@ -26,7 +26,7 @@
         
         return [[RACSignal combineLatest:[collections.rac_sequence map:^id(HKTCollection* collection) {
             
-            return [self fetchCollectionWithID:collection.objectID];
+            return [self fetchPlaylistWithID:collection.objectID];
         }]]map:^id(RACTuple *tuple) {
             
             return [tuple allObjects];;
@@ -34,9 +34,10 @@
     }];
 }
 
-- (RACSignal*)fetchCollectionWithID:(NSString*)collectionID
+//- (RACSignal*)fetchCollectionWithID:(NSString*)collectionID
+- (RACSignal*)fetchPlaylistWithID:(NSString*)playlistID
 {
-    NSURLRequest *request = [self createRequestForResource:[@"collections/" stringByAppendingString:collectionID]
+    NSURLRequest *request = [self createRequestForResource:[@"playlist/list/" stringByAppendingString:playlistID]
                                                     method:URLRequestMethodTypeGET
                                                 parameters:nil];
     return [self enqueueRequest:request resultClass:HKTCollection.class];
@@ -49,7 +50,7 @@
 
 - (RACSignal*)fetchAllCollectionsMetadataWithParameters:(NSArray<HKTRequestParameter*>*)parameters
 {
-    NSURLRequest *request = [self createRequestForResource:@"collections"
+    NSURLRequest *request = [self createRequestForResource:@"playlist"
                                                     method:URLRequestMethodTypeGET
                                                 parameters:[HKTRequestParameter dictionaryForRequestParameters:parameters]];
     
