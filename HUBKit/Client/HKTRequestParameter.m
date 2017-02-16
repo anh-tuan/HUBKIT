@@ -52,6 +52,12 @@
     return [[HKTRequestParameter alloc] initWithType:HKTRequestParameterTypeContentTypes value:[self parameterValuesArrayForContentTypeOptions:contentTypeOptions]];
 }
 
++(HKTRequestParameter*) parameterWithTypesOptions:(HKTContentType)typeOptions
+{
+    if (typeOptions == HKTContentTypeUnknown) {return nil;}
+    return [[HKTRequestParameter alloc] initWithType:HKTRequestParameterTypeTypes value:[self parameterValuesArrayForTypeOptions:typeOptions]];
+}
+
 +(HKTRequestParameter*) parameterWithProductTypeOptions:(HKTProductType)productTypeOptions
 {
     if (productTypeOptions == HKTProductTypeUnknown) {return nil;}
@@ -136,7 +142,10 @@
             return @"limit";
             break;
         case HKTRequestParameterTypeContentTypes:
-            return @"types";
+            return @"content_type";
+            break;
+        case HKTRequestParameterTypeTypes:
+            return @"type";
             break;
         case HKTRequestParameterTypeProductTypes:
             return @"offerings";
@@ -195,6 +204,19 @@
     return [paramValueArray copy];
 }
 
++(NSArray<NSString*>*)parameterValuesArrayForTypeOptions:(HKTContentType)typeOptions
+{
+    NSMutableArray *paramValueArray = [[NSMutableArray alloc] init];
+    for (NSUInteger currentBit=0; currentBit < kBitsUsedByHKTContentTypeOptions; currentBit++) {
+        NSUInteger bitValueToCheck = 1 << currentBit;
+        if (typeOptions & bitValueToCheck) {
+            HKTContentType singleContentType = 1 << currentBit;
+            [paramValueArray addObject:[self parameterValueForSingleContentType:singleContentType]];
+        }
+    }
+    return [paramValueArray copy];
+}
+
 /**
  *  Converts a single non bitwise operated HKTContentType to its appropriate request param value
  *
@@ -226,7 +248,7 @@
             return @"collection";
             break;
         case HKTContentTypeClip:
-            return @"clip";
+            return @"Clips";
             break;
         case HKTContentTypeLive:
             return @"live";

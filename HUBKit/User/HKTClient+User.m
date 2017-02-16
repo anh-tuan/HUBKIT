@@ -17,10 +17,10 @@
 
 #pragma mark - User
 - (RACSignal *)fetchUser {
-    NSURLRequest *request = [self createRequestForResource:@"user"
+    NSURLRequest *request = [self createRequestForJSONResource:@"user"
                                                     method:URLRequestMethodTypeGET
                                                 parameters:nil];
-    
+    //NSLog(@"fetchUser request: %@",request);
     return [self enqueueRequest:request resultClass:HKTUser.class];
 }
 
@@ -32,16 +32,16 @@
 
 - (RACSignal*)fetchFavouriteProductsWithParameters:(NSArray<HKTRequestParameter*>*)parameters
 {
-    NSURLRequest *request = [self createRequestForResource:@"user/favourites"
+    NSURLRequest *request = [self createRequestForJSONResource:@"user/favourites"
                                                     method:URLRequestMethodTypeGET
                                                 parameters:[HKTRequestParameter dictionaryForRequestParameters:parameters]];
-    
+    //NSLog(@"fetchFavouriteProductsWithParameters parameters: %@",parameters);
     return [[self enqueueRequest:request resultClass:HKTListResponse.class] hkt_parsedProductsList];
 }
 
 - (RACSignal*)addFavouriteProduct:(NSString*)productObjectID
 {
-    NSURLRequest *request = [self createRequestForResource:@"user/favourites"
+    NSURLRequest *request = [self createRequestForJSONResource:@"user/favourites"
                                                     method:URLRequestMethodTypePOST
                                                 parameters:@{@"product_id" : productObjectID}];
     
@@ -50,7 +50,7 @@
 
 - (RACSignal*)deleteFavouriteProduct:(NSString*)productObjectID
 {
-    NSURLRequest *request = [self createRequestForResource:[NSString stringWithFormat: @"user/favourites/%@", productObjectID]
+    NSURLRequest *request = [self createRequestForJSONResource:[NSString stringWithFormat: @"user/favourites/%@", productObjectID]
                                                     method:URLRequestMethodTypeDELETE
                                                 parameters:nil];
     
@@ -65,9 +65,11 @@
 
 -(RACSignal*)fetchPurchasesWithParameters:(NSArray<HKTRequestParameter*>*)parameters
 {
-    NSURLRequest *request = [self createRequestForResource:@"user/purchases"
+    NSURLRequest *request = [self createRequestForJSONResource:@"user/purchases"
                                                     method:URLRequestMethodTypeGET
                                                 parameters:[HKTRequestParameter dictionaryForRequestParameters:parameters]];
+    
+    //NSLog(@"fetchPurchasesWithParameters parameters: %@",parameters);
     
     return [[self enqueueRequest:request resultClass:HKTListResponse.class] hkt_parsedProductsList];
 }

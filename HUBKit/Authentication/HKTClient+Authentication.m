@@ -87,6 +87,27 @@ static NSString *kHKTUser = @"HKTUser";
     
 }
 
+- (RACSignal*)forgotAccountWithDic:(NSDictionary*)dict
+{
+    
+    //    NSDictionary* params = @{ @"provider"   :   DEFAULT_AUTH_PROVIDER,
+    //                              @"access_token" :   accessToken,
+    //                              };
+    
+    
+    NSURLRequest *request = [self createRequestForResource:@"user/resetpassword"
+                                                    method:URLRequestMethodTypePOST
+                                                parameters:dict];
+    
+    @weakify(self);
+    return [[self enqueueRequest:request resultClass:HKTUser.class]
+            flattenMap:^RACStream *(id value) {
+                
+                return [RACSignal empty];
+            }];
+    
+}
+
 - (RACSignal*) signOutCurrentUser
 {
     //TODO: Endpoint is not available yet. Just reusing authenticate endpoint for now and discarding the result.
@@ -98,6 +119,7 @@ static NSString *kHKTUser = @"HKTUser";
                 UICKeyChainStore *keychain = [UICKeyChainStore keyChainStore];
                 [keychain removeAllItems];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accessToken"];
+                [[NSUserDefaults standardUserDefaults] synchronize];
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"logoutSuccess" object:nil];
                 [self.requestSerializer setValue:nil forHTTPHeaderField:@"Movideo-Auth"];
                 [self.xmlRequestSerializer setValue:nil forHTTPHeaderField:@"Movideo-Auth"];
@@ -110,6 +132,10 @@ static NSString *kHKTUser = @"HKTUser";
 - (RACSignal*)signInWithIdentifier:(NSString *)identifier password:(NSString *)password
 {
     NSDictionary* params;
+    
+    //NSLog(@"signInWithIdentifier identifier: %@",identifier);
+    //NSLog(@"signInWithIdentifier password: %@",password);
+    
     if (password) {
         params = @{ @"provider"   :   DEFAULT_AUTH_PROVIDER,
                     @"identifier" :   identifier,
@@ -122,9 +148,13 @@ static NSString *kHKTUser = @"HKTUser";
         NSLog(@"password nil");
     }
     
+    //NSLog(@"signInWithIdentifier params: %@",params);
+    
     NSURLRequest *request = [self createRequestForResource:@"user/authenticate"
                                                       method:URLRequestMethodTypePOST
                                                   parameters:params];
+    //NSLog(@"signInWithIdentifier request: %@",request);
+    
     @weakify(self);
     return [[self enqueueRequest:request resultClass:HKTUser.class]
             flattenMap:^RACStream *(HKTUser* authenticatedUser) {
@@ -136,8 +166,14 @@ static NSString *kHKTUser = @"HKTUser";
 
 - (void)saveUserDetailToKeyChain:(HKTUser*)user password:(NSString *)password
 {
+    //NSLog(@"saveUserDetailToKeyChain: %@",user);
+    //NSLog(@"saveUserDetailToKeyChain user.identifier: %@",user.identifier);
+    //NSLog(@"saveUserDetailToKeyChain user.accesstoken: %@",user.accessToken);
+    //NSLog(@"saveUserDetailToKeyChain password: %@",password);
     UICKeyChainStore *keychain = [UICKeyChainStore keyChainStore];
     [keychain removeAllItems];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accessToken"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
     [keychain setString:user.identifier forKey:kHKTUserName];
     [keychain setString:user.accessToken forKey:kHKTToken];
     if (password) {
@@ -148,6 +184,7 @@ static NSString *kHKTUser = @"HKTUser";
     [self.requestSerializer setValue:user.accessToken forHTTPHeaderField:@"Movideo-Auth"];
     [self.xmlRequestSerializer setValue:user.accessToken forHTTPHeaderField:@"Movideo-Auth"];
     if (user.accessToken) {
+        //NSLog(@"saveUserDetailToKeyChain user.accesstoken: %@",user.accessToken);
         [[NSUserDefaults standardUserDefaults] setObject:user.accessToken forKey:@"accessToken"];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
@@ -155,6 +192,7 @@ static NSString *kHKTUser = @"HKTUser";
 
 - (RACSignal*)refreshTokenForCurrenUser
 {
+    //NSLog(@"refreshTokenForCurrenUser check ");
     UICKeyChainStore *keychain = [UICKeyChainStore keyChainStore];
     HKTUser *user = [HKTClient currentSavedUser];
     if (!user) { return [RACSignal empty]; }

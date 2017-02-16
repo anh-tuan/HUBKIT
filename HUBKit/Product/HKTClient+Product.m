@@ -14,6 +14,8 @@
 
 - (RACSignal *)fetchProductWithID:(NSString *)productID
 {
+    
+    //NSLog(@"fetchProductWithID");
     NSURLRequest *request = [self createRequestForResource:[@"products/" stringByAppendingString:productID]
                                                     method:URLRequestMethodTypeGET
                                                 parameters:nil];
@@ -45,6 +47,7 @@
     NSDictionary* requestParams = [HKTRequestParameter dictionaryForRequestParameters:parameters];
     requestParams = [requestParams mtl_dictionaryByAddingEntriesFromDictionary:@{@"q" : searchQuery}];
   
+    NSLog(@"searchForProductsMatchingQuery requestParams: %@",requestParams);
     NSURLRequest *request = [self createRequestForResource:@"products/search"
                                                     method:URLRequestMethodTypeGET
                                                 parameters:requestParams];

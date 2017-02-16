@@ -20,6 +20,8 @@
 
 - (RACSignal*)signUpAccountWithDic:(NSDictionary*)dict;
 
+- (RACSignal*)forgotAccountWithDic:(NSDictionary*)dict;
+
 - (RACSignal*)signInWithIdentifier:(NSString *)identifier password:(NSString *)password;
 
 - (void)saveUserDetailToKeyChain:(HKTUser*)user password:(NSString *)password;

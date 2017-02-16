@@ -27,7 +27,7 @@
     NSURLRequest *request = [self createRequestForResource:path
                                                     method:URLRequestMethodTypeGET
                                                 parameters:param];
-    NSLog(@"fetchAllRailsWithParameters.request: %@",request);
+    //NSLog(@"fetchAllRailsWithParameters.request: %@",request);
     return [[self enqueueRequest:request resultClass:HKTListResponse.class] hkt_parsedRailsList];
 }
 

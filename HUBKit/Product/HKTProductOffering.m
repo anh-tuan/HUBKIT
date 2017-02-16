@@ -50,15 +50,39 @@
     NSDate *date1 = [[NSDate alloc] init];
     NSDate *date2 = [[NSDate alloc] initWithTimeInterval:theTimeInterval sinceDate:date1];
     
+    //NSLog(@"date2 %@",date2);
+    
     // Get conversion to months, days, hours, minutes
-    unsigned int unitFlags = NSCalendarUnitHour | NSCalendarUnitDay;
+    unsigned int unitFlags = NSCalendarUnitHour;
     
     NSDateComponents *conversionInfo = [sysCalendar components:unitFlags fromDate:date1  toDate:date2  options:0];
-    if ([conversionInfo day] > 0) {
-        remainingTime = [NSString stringWithFormat:@"Còn lại %ld ngày",(long)[conversionInfo day]];
-    }else {
+    NSLog(@"convertTimeRemaining conversionInfo %@",conversionInfo);
+    //NSLog(@"convertTimeRemaining conversionInfo hour %@",[conversionInfo hour]);
+    
+    /*
+     if ([conversionInfo day] > 0) {
+     remainingTime = [NSString stringWithFormat:@"Còn lại %ld ngày",(long)[conversionInfo day]];
+     }else {
+     remainingTime = [NSString stringWithFormat:@"Còn lại %ld giờ",(long)[conversionInfo hour]];
+     }
+     */
+    
+    
+    if((long)[conversionInfo hour]<=48){
+        //NSLog(@"convertTimeRemaining conversionInfo %ld",[conversionInfo hour]);
+    
         remainingTime = [NSString stringWithFormat:@"Còn lại %ld giờ",(long)[conversionInfo hour]];
     }
+    else{
+        unitFlags = NSCalendarUnitDay;
+        conversionInfo = [sysCalendar components:unitFlags fromDate:date1  toDate:date2  options:0];
+        //NSLog(@"convertTimeRemaining conversionInfo day %ld",(long)[conversionInfo day]);
+        
+        remainingTime = [NSString stringWithFormat:@"Còn lại %ld ngày",(long)[conversionInfo day]];
+
+
+    }
+    
     return remainingTime;
 }
 - (NSString*)navgationBarTitle

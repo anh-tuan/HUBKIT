@@ -21,6 +21,7 @@ typedef NS_ENUM(NSUInteger, HKTRequestParameterType){
     HKTRequestParameterTypeLimit,
     /** Content Type - See HKTContentType */
     HKTRequestParameterTypeContentTypes,
+    HKTRequestParameterTypeTypes,
     /** Product Type - See HKTProductType */
     HKTRequestParameterTypeProductTypes,
     /** Content types to be excluded from the results - See HKTContentType */

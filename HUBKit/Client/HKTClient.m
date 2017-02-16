@@ -28,6 +28,8 @@ const NSInteger HKTClientErrorJSONParsingFailed = 669;
 const NSInteger HKTClientErrorBadRequest = 670;
 const NSInteger HKTClientErrorRequestForbidden = 674;
 
+static NSString *bhd_api_key = @"457";
+
 @interface HKTClient ()
 
 @property (nonatomic, strong) AFHTTPRequestSerializer <AFURLRequestSerialization> * xmlRequestSerializer;
@@ -59,24 +61,54 @@ const NSInteger HKTClientErrorRequestForbidden = 674;
     [self.xmlRequestSerializer setValue:@"0" forHTTPHeaderField:@"Content-Length"];
     [self.xmlRequestSerializer setAuthorizationHeaderFieldWithUsername:APIKey password:@""];
     NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:@"accessToken"];
+    //NSLog(@"configureRequestSerializers accessToken: %@",accessToken);
     if (accessToken) {
+        //NSLog(@"configureRequestSerializers else");
         [self.xmlRequestSerializer setValue:accessToken forHTTPHeaderField:@"Movideo-Auth"];
     }
-}
+} 
 
 #pragma mark - Request Creation
 - (NSMutableURLRequest *)createRequestForResource:(NSString *)resource method:(URLRequestMethodType)method parameters:(NSDictionary *)parameters
 {
+    //NSLog(@"createRequestForResource method parameters");
+    
     NSParameterAssert(resource != nil);
     
     NSMutableDictionary *params = (parameters != nil) ? parameters.mutableCopy : @{}.mutableCopy;
     
+    //NSLog(@"createRequestForResource params: %@",params);
+    
     params = params.count == 0 ? nil : params;
+    
+    //NSLog(@"searchForProductsMatchingQuery params: %@",params);
+    
     NSString *requestMethod = [HKTClient requestMethodNameForType:method];
     
     NSString *resourceURLString = [[NSURL URLWithString:resource relativeToURL:self.baseURL] absoluteString];
+    
+    NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:@"accessToken"];
+    //NSLog(@"createRequestForResource accessToken: %@",accessToken);
+    if (accessToken) {
+        //NSLog(@"createRequestForResource if");
+        [self.requestSerializer setValue:accessToken forHTTPHeaderField:@"Movideo-Auth"];
+    }
+    
     NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:requestMethod URLString:resourceURLString parameters:params error:nil];
     
+    //NSLog(@"createRequestForResource NSMutableURLRequest: %@",request);
+    
+    NSString *requestPath = [[[request URL] absoluteString] stringByReplacingOccurrencesOfString:@"%5B%5D" withString:@""];
+    
+    //NSLog(@"searchForProductsMatchingQuery NSMutableURLRequestString: %@",requestPath);
+    
+    NSURL *url = [NSURL URLWithString:requestPath];
+    
+    [request setURL:[NSURL URLWithString:[[[request URL] absoluteString] stringByReplacingOccurrencesOfString:@"%5B%5D" withString:@""]]];
+    
+    //NSLog(@"searchForProductsMatchingQuery NSMutableURLRequest FIXED: %@",request);
+    //NSLog(@"searchForProductsMatchingQuery NSMutableURLRequest FIXED: %@",request.allHTTPHeaderFields);
+
     
     return request;
 }
@@ -91,6 +123,13 @@ const NSInteger HKTClientErrorRequestForbidden = 674;
     NSString *requestMethod = [HKTClient requestMethodNameForType:method];
     
     NSString *resourceURLString = [[NSURL URLWithString:resource relativeToURL:self.baseURL] absoluteString];
+    
+    NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:@"accessToken"];
+    //NSLog(@"createRequestForJSONResource accessToken: %@",accessToken);
+    if (accessToken) {
+        //NSLog(@"createRequestForJSONResource if");
+        [self.xmlRequestSerializer setValue:accessToken forHTTPHeaderField:@"Movideo-Auth"];
+    }
     NSMutableURLRequest *request = [self.xmlRequestSerializer requestWithMethod:requestMethod URLString:resourceURLString parameters:params error:nil];
     
     return request;
@@ -106,9 +145,12 @@ const NSInteger HKTClientErrorRequestForbidden = 674;
     [xmlRequestSerializer setValue:@"0" forHTTPHeaderField:@"Content-Length"];
     [xmlRequestSerializer setAuthorizationHeaderFieldWithUsername:bhd_api_key password:@""];
     NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:@"accessToken"];
+    //NSLog(@"createRequestForJSONResource accessToken: %@",accessToken);
     if (accessToken) {
+        //NSLog(@"createRequestForJSONResource if");
         [xmlRequestSerializer setValue:accessToken forHTTPHeaderField:@"Movideo-Auth"];
     }
+    
     NSMutableDictionary *params = (parameters != nil) ? parameters.mutableCopy : @{}.mutableCopy;
     
     params = params.count == 0 ? nil : params;
@@ -129,6 +171,12 @@ const NSInteger HKTClientErrorRequestForbidden = 674;
     NSString *requestMethod = [HKTClient requestMethodNameForType:method];
     
     NSString *resourceURLString = [[NSURL URLWithString:resource relativeToURL:[NSURL URLWithString:urlString]] absoluteString];
+    NSString *accessToken = [[NSUserDefaults standardUserDefaults] objectForKey:@"accessToken"];
+    //NSLog(@"createRequestForJSONResource accessToken: %@",accessToken);
+    if (accessToken) {
+        //NSLog(@"createRequestForJSONResource if");
+        [self.xmlRequestSerializer setValue:accessToken forHTTPHeaderField:@"Movideo-Auth"];
+    }
     NSMutableURLRequest *request = [self.xmlRequestSerializer requestWithMethod:requestMethod URLString:resourceURLString parameters:params error:nil];
     
     return request;
@@ -156,19 +204,22 @@ const NSInteger HKTClientErrorRequestForbidden = 674;
 #pragma mark - Enqueue Request
 - (RACSignal *)enqueueRequest:(NSURLRequest *)request resultClass:(Class)resultClass
 {
+    
     RACSignal* enqueRequestSignal = [[self enqueueRequest:request] flattenMap:^RACStream *(RACTuple *responseTuple) {
         id responseObject = [responseTuple second];
         return [self parsedResponseOfClass:resultClass fromJSON:responseObject];
     }];
     
+    //NSLog(@"[%@ %d %s] enqueueRequest BEFORE enqueueRequest request: %@", [[[NSString stringWithUTF8String:__FILE__] lastPathComponent] lastPathComponent], __LINE__, __PRETTY_FUNCTION__,request);
     return [self refreshTokenIfRequiredForEnqueRequestSignal:enqueRequestSignal];
 }
 
 - (RACSignal *)enqueueRequest:(NSURLRequest *)request
 {
     RACSignal *signal = [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-        
-        NSLog(@"enqueueRequest request: %@",request);
+        //[self configureRequestSerializers:bhd_api_key];
+        //NSLog(@"enqueueRequest request: %@",request);
+        //NSLog(@"enqueueRequest request.allHTTPHeaderFields: %@",request.allHTTPHeaderFields);
         
         NSURLSessionDataTask __block *dataTask = [self dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
             
@@ -180,10 +231,22 @@ const NSInteger HKTClientErrorRequestForbidden = 674;
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"resetMenu" object:nil];
             } else {
                 NSLog(@"%@ %@ %@ => FAILED WITH %li", request.HTTPMethod, request.URL, request.allHTTPHeaderFields, (long)httpResponse.statusCode);
+                
+                if ([[[request URL] absoluteString] rangeOfString:@"authenticate"].location == NSNotFound && [[[request URL] absoluteString] rangeOfString:@"purchase"].location == NSNotFound && [[[request URL] absoluteString] rangeOfString:@"user"].location == NSNotFound) {
+                    //NSLog(@"string does not contain bla");
+                    //[subscriber sendError:[self.class HUBKitErrorForURLResponse:dataTask.response error:dataTask.error]];
+                    [subscriber sendNext:RACTuplePack(httpResponse, responseObject)];
+                    [subscriber sendCompleted];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"resetMenu" object:nil];
+                } else {
+                    //NSLog(@"string contains bla!");
+                    [subscriber sendError:[self.class HUBKitErrorForURLResponse:dataTask.response error:dataTask.error]];
+                }
+                
                 //[subscriber sendError:[self.class HUBKitErrorForURLResponse:dataTask.response error:dataTask.error]];
-                [subscriber sendNext:RACTuplePack(httpResponse, responseObject)];
-                [subscriber sendCompleted];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"resetMenu" object:nil];
+                //[subscriber sendNext:RACTuplePack(httpResponse, responseObject)];
+                //[subscriber sendCompleted];
+                //[[NSNotificationCenter defaultCenter] postNotificationName:@"resetMenu" object:nil];
             }
         }];
         
@@ -227,11 +290,14 @@ const NSInteger HKTClientErrorRequestForbidden = 674;
 
 -(RACSignal*) refreshTokenIfRequiredForEnqueRequestSignal:(RACSignal*)enqueueRequestSignal
 {
+    //NSLog(@"refreshTokenIfRequiredForEnqueRequestSignal");
     return [enqueueRequestSignal catch:^RACSignal *(NSError *error) {
         if ([error.userInfo[HKTClientErrorHTTPStatusCodeKey]  isEqual: @403]) {
+            //NSLog(@"refreshTokenIfRequiredForEnqueRequestSignal 403");
             return [enqueueRequestSignal retry:2];
         }
         if ([error.userInfo[HKTClientErrorHTTPStatusCodeKey]  isEqual: @401]) {
+            //NSLog(@"refreshTokenIfRequiredForEnqueRequestSignal 401");
             return [[self refreshTokenForCurrenUser] concat:enqueueRequestSignal];
         }
         return [RACSignal error:error];
@@ -265,13 +331,30 @@ const NSInteger HKTClientErrorRequestForbidden = 674;
             
             NSAssert([parsedObject isKindOfClass:HKTObject.class], @"Parsed model object is not an HKTObject: %@", parsedObject);
             
+            //NSLog(@"JSONDictionary: %@", JSONDictionary);
+            
             if ([JSONDictionary objectForKey:@"success"]) {
                 if (![[JSONDictionary objectForKey:@"success"] boolValue]) {
                     [subscriber sendError:nil];
                 }else {
                     [subscriber sendNext:parsedObject];
                 }
-            }else {
+            }else if ([JSONDictionary[@"error"][@"system_message"] length]>0){
+                NSDictionary *userInfo = @{
+                                           NSLocalizedDescriptionKey: JSONDictionary[@"error"][@"system_message"],
+                                           NSLocalizedFailureReasonErrorKey: JSONDictionary[@"error"][@"system_message"],
+                                           NSLocalizedRecoverySuggestionErrorKey: JSONDictionary[@"error"][@"system_message"]
+                                           };
+                NSError *error = [NSError errorWithDomain:@"danet.vn"
+                                                     code:-57
+                                                 userInfo:userInfo];
+                
+                
+                
+                [subscriber sendError:error];
+            }
+            
+            else {
                 [subscriber sendNext:parsedObject];
             }
         };
